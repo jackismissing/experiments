@@ -1,15 +1,15 @@
-var Square = require('./square');
+var Leaf = require('./leaf');
 
 function MainScene() {
 	this.canvas = document.getElementById("canvas");
 	this.ctx = this.canvas.getContext('2d');
 
-	this.squares = this.initSquares()
+	this.leaves = this.initLeaves()
 	this.update();
 };
 
-MainScene.prototype.initSquares = function() {
-	var squares = [];
+MainScene.prototype.initLeaves = function() {
+	var leaves = [];
 	var size;
 	var alpha;
 	var posX;
@@ -21,7 +21,7 @@ MainScene.prototype.initSquares = function() {
 		posX = Math.random() * this.canvas.width;
 		posY = Math.random() * this.canvas.height;
 
-		squares.push(new Square({
+		leaves.push(new Leaf({
 			ctx: 	this.ctx, 
 			color: 	"rgba(200, 0, 200, " + alpha + ")", 
 			width: 	size, 
@@ -32,7 +32,7 @@ MainScene.prototype.initSquares = function() {
 		}));
 	}
 
-	return squares;
+	return leaves;
 };
 
 MainScene.prototype.drawBgGradient = function() {
@@ -46,9 +46,9 @@ MainScene.prototype.drawBgGradient = function() {
  	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 };
 
-MainScene.prototype.drawSquares = function() {
-	for(var i = 0; i < this.squares.length; i++) {
-		this.squares[i].draw()
+MainScene.prototype.drawLeaves = function() {
+	for(var i = 0; i < this.leaves.length; i++) {
+		this.leaves[i].draw()
 	}
 };
 
@@ -56,7 +56,7 @@ MainScene.prototype.draw = function() {
 	this.ctx.fillStyle = "rgba(255, 255, 255, 1)";
 	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 	this.drawBgGradient();
-	this.drawSquares();
+	this.drawLeaves();
 };
 
 MainScene.prototype.update = function() {

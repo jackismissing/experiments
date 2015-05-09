@@ -3,81 +3,12 @@ window.onload = function() {
 	var MainScene = require('./main.js');
 	var mainScene = new MainScene();
 }
-},{"./main.js":2}],2:[function(require,module,exports){
-var Square = require('./square');
-
-function MainScene() {
-	this.canvas = document.getElementById("canvas");
-	this.ctx = this.canvas.getContext('2d');
-
-	this.squares = this.initSquares()
-	this.update();
-};
-
-MainScene.prototype.initSquares = function() {
-	var squares = [];
-	var size;
-	var alpha;
-	var posX;
-	var posY;
-
-	for(var i = 0; i < 100; i++) {
-		size = Math.random() * (15 - 3) + 3;
-		alpha = 1 / size + 0.3;
-		posX = Math.random() * this.canvas.width;
-		posY = Math.random() * this.canvas.height;
-
-		squares.push(new Square({
-			ctx: 	this.ctx, 
-			color: 	"rgba(200, 0, 200, " + alpha + ")", 
-			width: 	size, 
-			height: size, 
-			mass:   size,
-			posX: 	posX, 
-			posY: 	posY
-		}));
-	}
-
-	return squares;
-};
-
-MainScene.prototype.drawBgGradient = function() {
-	var lingrad = this.ctx.createLinearGradient(0,0,0,this.canvas.height);
- 	lingrad.addColorStop(0, 'rgba(200, 0, 200, .1)');
- 	lingrad.addColorStop(0.3, 'rgba(255, 255, 255, .1)');
- 	lingrad.addColorStop(0.7, 'rgba(255, 255, 255, .1)');
- 	lingrad.addColorStop(1, 'rgba(200, 0, 200, .1)');
-
- 	this.ctx.fillStyle = lingrad;
- 	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-};
-
-MainScene.prototype.drawSquares = function() {
-	for(var i = 0; i < this.squares.length; i++) {
-		this.squares[i].draw()
-	}
-};
-
-MainScene.prototype.draw = function() {
-	this.ctx.fillStyle = "rgba(255, 255, 255, 1)";
-	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-	this.drawBgGradient();
-	this.drawSquares();
-};
-
-MainScene.prototype.update = function() {
-	var this_ = this;
-	window.requestAnimationFrame(function() {this_.update()});
-	this.draw();
-};
-
-module.exports = MainScene;
-},{"./square":3}],3:[function(require,module,exports){
+},{"./main.js":3}],2:[function(require,module,exports){
 var Vector = require('./vector');
 var SimplexNoise = require('simplex-noise');
 var simplex = new SimplexNoise();
 
-function Square(data) {
+function Leaf(data) {
 	this.ctx 		= data.ctx;
 	this.color 		= data.color;
 	this.width 		= data.width;
@@ -97,7 +28,7 @@ function Square(data) {
 	this.windNoiseY = 100;
 }
 	
-Square.prototype.move = function() {
+Leaf.prototype.move = function() {
 	// Newton's 2 law of motion : "Net force equals mass times acceleration"
 	// Or : acceleration = sum(forces) / mass 
 	// (don't forget to reset acceleration after each move because forces are not cumulative)
@@ -121,7 +52,7 @@ Square.prototype.move = function() {
 	
 }
 
-Square.prototype.applyForce = function(vector, force, applyMass, reverse) {
+Leaf.prototype.applyForce = function(vector, force, applyMass, reverse) {
 	// Make a copy of forces original values to prevent them from being overriden at each loop turn
 	var forceCopy = {
 		x: force.x,
@@ -142,14 +73,14 @@ Square.prototype.applyForce = function(vector, force, applyMass, reverse) {
 	return forceCopy;
 }
 
-Square.prototype.updateForces = function() {
+Leaf.prototype.updateForces = function() {
 	// Change wind according to noise
 	this.wind.x = Math.floor(simplex.noise2D(this.windNoiseX, this.windNoiseY) * 20 + 20)
 	this.windNoiseX += 0.001;
 	this.windNoiseY += 0.001;
 }
 
-Square.prototype.draw = function() {
+Leaf.prototype.draw = function() {
 	this.move();
 	this.updateForces();
 	
@@ -180,7 +111,7 @@ Square.prototype.draw = function() {
 	//this.ctx.fillRect(this.vLoc.x, this.vLoc.y, this.width, this.height);
 }
 
-Square.prototype.checkBoundaries = function() {
+Leaf.prototype.checkBoundaries = function() {
 	
 	if(this.vLoc.x > canvas.width)
 		this.vLoc.x = -20;
@@ -214,8 +145,77 @@ Square.prototype.checkBoundaries = function() {
 
 }
 
-module.exports = Square;
-},{"./vector":4,"simplex-noise":5}],4:[function(require,module,exports){
+module.exports = Leaf;
+},{"./vector":4,"simplex-noise":5}],3:[function(require,module,exports){
+var Leaf = require('./leaf');
+
+function MainScene() {
+	this.canvas = document.getElementById("canvas");
+	this.ctx = this.canvas.getContext('2d');
+
+	this.leaves = this.initLeaves()
+	this.update();
+};
+
+MainScene.prototype.initLeaves = function() {
+	var leaves = [];
+	var size;
+	var alpha;
+	var posX;
+	var posY;
+
+	for(var i = 0; i < 100; i++) {
+		size = Math.random() * (15 - 3) + 3;
+		alpha = 1 / size + 0.3;
+		posX = Math.random() * this.canvas.width;
+		posY = Math.random() * this.canvas.height;
+
+		leaves.push(new Leaf({
+			ctx: 	this.ctx, 
+			color: 	"rgba(200, 0, 200, " + alpha + ")", 
+			width: 	size, 
+			height: size, 
+			mass:   size,
+			posX: 	posX, 
+			posY: 	posY
+		}));
+	}
+
+	return leaves;
+};
+
+MainScene.prototype.drawBgGradient = function() {
+	var lingrad = this.ctx.createLinearGradient(0,0,0,this.canvas.height);
+ 	lingrad.addColorStop(0, 'rgba(200, 0, 200, .1)');
+ 	lingrad.addColorStop(0.3, 'rgba(255, 255, 255, .1)');
+ 	lingrad.addColorStop(0.7, 'rgba(255, 255, 255, .1)');
+ 	lingrad.addColorStop(1, 'rgba(200, 0, 200, .1)');
+
+ 	this.ctx.fillStyle = lingrad;
+ 	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+};
+
+MainScene.prototype.drawLeaves = function() {
+	for(var i = 0; i < this.leaves.length; i++) {
+		this.leaves[i].draw()
+	}
+};
+
+MainScene.prototype.draw = function() {
+	this.ctx.fillStyle = "rgba(255, 255, 255, 1)";
+	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	this.drawBgGradient();
+	this.drawLeaves();
+};
+
+MainScene.prototype.update = function() {
+	var this_ = this;
+	window.requestAnimationFrame(function() {this_.update()});
+	this.draw();
+};
+
+module.exports = MainScene;
+},{"./leaf":2}],4:[function(require,module,exports){
 function Vector(x, y) {
 	this.x = x;
 	this.y = y;
