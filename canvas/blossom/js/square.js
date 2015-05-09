@@ -29,8 +29,8 @@ Square.prototype.move = function() {
 	this.vAcc.mult(0);
 	
 	var windForce = this.applyForce(this.vAcc, this.wind, true);
-	var gravityForce = this.applyForce(this.vAcc, this.gravity);
-	
+	var gravityForce = this.applyForce(this.vAcc, this.gravity, true);
+	//console.log(gravityForce);
 	/*
 	this.vAcc.x *= this.vDir.x;
 	this.vAcc.y *= this.vDir.y;
