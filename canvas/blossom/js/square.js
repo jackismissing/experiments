@@ -15,8 +15,8 @@ function Square(data) {
 	this.vLoc 		= new Vector(data.posX, data.posY);
 	this.vDir       = new Vector(1, 1);
 
-	this.wind 		= new Vector(20, 0);
-	this.gravity 	= new Vector(0, 3);
+	this.wind 		= new Vector(25, 0);
+	this.gravity 	= new Vector(0, 0.1);
 
 	this.windNoiseX = 1;
 	this.windNoiseY = 100;
@@ -29,7 +29,7 @@ Square.prototype.move = function() {
 	this.vAcc.mult(0);
 	
 	var windForce = this.applyForce(this.vAcc, this.wind, true);
-	var gravityForce = this.applyForce(this.vAcc, this.gravity, true);
+	var gravityForce = this.applyForce(this.vAcc, this.gravity, true, true);
 	//console.log(gravityForce);
 	/*
 	this.vAcc.x *= this.vDir.x;
@@ -46,16 +46,20 @@ Square.prototype.move = function() {
 	
 }
 
-Square.prototype.applyForce = function(vector, force, applyMass) {
+Square.prototype.applyForce = function(vector, force, applyMass, reverse) {
 	// Make a copy of forces original values to prevent them from being overriden at each loop turn
 	var forceCopy = {
 		x: force.x,
 		y: force.y
 	}
 
-	if(applyMass) {
+	if(applyMass && !reverse) {
 		forceCopy.x /= this.mass;
 		forceCopy.y /= this.mass;
+	}
+	else if(applyMass && reverse) {
+		forceCopy.x *= this.mass;
+		forceCopy.y *= this.mass;
 	}
 
 	vector.add(forceCopy);

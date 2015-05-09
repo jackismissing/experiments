@@ -16,7 +16,7 @@ MainScene.prototype.initSquares = function() {
 	var posY;
 
 	for(var i = 0; i < 100; i++) {
-		size = Math.random() * 15 + 1;
+		size = Math.random() * (15 - 3) + 3;
 		alpha = 1 / size + 0.3;
 		posX = Math.random() * this.canvas.width;
 		posY = Math.random() * this.canvas.height;
